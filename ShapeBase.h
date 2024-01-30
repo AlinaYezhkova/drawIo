@@ -1,5 +1,7 @@
 #pragma once
 
+#include "qgraphicsscene.h"
+#include <QGraphicsItem>
 #include <QPainter>
 
 using Position = QPointF;
