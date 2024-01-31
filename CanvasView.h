@@ -9,13 +9,13 @@
 class CanvasView : public QGraphicsView
 {
     Document&   m_doc;
-    bool        m_leftMouseButtonPressed = false;
+    bool        m_allowDrag = false;
 
 public:
     CanvasView(Document& doc, QWidget *parent = nullptr) : QGraphicsView(parent), m_doc(doc)
     {
         setRenderHint(QPainter::Antialiasing);
-        //setViewportUpdateMode(FullViewportUpdate);
+        setViewportUpdateMode(FullViewportUpdate);
         setMouseTracking(true);
 
         //setDragMode(QGraphicsView::ScrollHandDrag);
@@ -65,26 +65,34 @@ protected:
         drawDoc(painter, rect);
     }
 
+    ShapeBase* selectShape (Position position) const
+    {
+        for(auto& shape : m_doc.m_shapes)
+        {
+            if(shape->pointBelongs(position)){
+                return shape;
+            }
+        }
+
+        // TODO: make Document ShapeBase ?! For dragging around
+        return m_doc.m_shapes.back();
+    }
+
     void mousePressEvent(QMouseEvent *event) override
     {
         if (event->button() == Qt::LeftButton) {
-            m_leftMouseButtonPressed = true;
             Position mousePosition = mapToScene(event->pos());
-            ShapeBase* shapeToMove = m_doc.m_shapes.back();
-            // TODO: select shapeToMove from vector according to position
-            shapeToMove->setPosition(mousePosition);
-            updateScene({rect()});
-            //this->viewport()->update();
+            m_doc.m_selectedShape = selectShape(mousePosition);
+            m_allowDrag = true;
+            m_doc.m_selectedShape->setPosition(mousePosition);
         }
         QGraphicsView::mousePressEvent(event);
     }
 
     void mouseMoveEvent(QMouseEvent *event) override {
-        if(m_leftMouseButtonPressed) {
+        if(m_allowDrag) {
             Position mousePosition = mapToScene(event->pos());
-            ShapeBase* shapeToMove = m_doc.m_shapes.back();
-            // TODO: select shapeToMove from vector according to position
-            shapeToMove->setPosition(mousePosition);
+            m_doc.m_selectedShape->setPosition(mousePosition);
             QRectF sceneRect = mapToScene(viewport()->rect()).boundingRect();
             updateScene({sceneRect});
         }
@@ -93,12 +101,12 @@ protected:
 
     void mouseReleaseEvent(QMouseEvent *event) override {
         if (event->button() == Qt::LeftButton) {
-            m_leftMouseButtonPressed = false;
-            Position mousePosition = mapToScene(event->pos());
-            ShapeBase* shapeToMove = m_doc.m_shapes.back();
-            // TODO: select shapeToMove from vector according to position
-            shapeToMove->setPosition(mousePosition);
-            this->viewport()->update();
+            m_allowDrag = false;
+//            Position mousePosition = mapToScene(event->pos());
+//            ShapeBase* shapeToMove = m_doc.m_shapes.back();
+//            // TODO: select shapeToMove from vector according to position
+//            shapeToMove->setPosition(mousePosition);
+//            this->viewport()->update();
         }
 
         QGraphicsView::mouseReleaseEvent(event);

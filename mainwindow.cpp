@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     view->setScene(scene);
     setCentralWidget(view);
     m_doc.m_shapes.push_back( new Circle(Position(100, 100), 50, Qt::red, Qt::yellow) );
+    m_doc.m_shapes.push_back( new Square(Position(-100, -100), 50, Qt::red, Qt::green) );
 
 }
 
