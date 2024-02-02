@@ -23,10 +23,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(drawing
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        CanvasView.h
-        Settings.h Settings.cpp
-        Document.h Document.cpp
-        ShapeBase.h ShapeBase.cpp
+        CanvasView.h        CanvasView.cpp
+        Settings.h          Settings.cpp
+        Document.h          Document.cpp
+        ShapeBase.h         ShapeBase.cpp
+        Circle.h            Circle.cpp
+        Square.h            Square.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET drawing APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
